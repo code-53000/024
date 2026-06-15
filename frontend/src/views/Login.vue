@@ -6,34 +6,40 @@
         <h1>矿物晶体收藏管理系统</h1>
         <p>Mineral Crystal Collection System</p>
       </div>
-      
+
       <el-form
-        ref="loginForm"
-        :model="loginForm"
+        ref="loginFormRef"
+        :model="loginFormData"
         :rules="loginRules"
         class="login-form"
         @keyup.enter="handleLogin"
       >
         <el-form-item prop="username">
           <el-input
-            v-model="loginForm.username"
+            v-model="loginFormData.username"
             placeholder="请输入用户名"
-            :prefix-icon="User"
             size="large"
-          />
+          >
+            <template #prefix>
+              <el-icon><User /></el-icon>
+            </template>
+          </el-input>
         </el-form-item>
-        
+
         <el-form-item prop="password">
           <el-input
-            v-model="loginForm.password"
+            v-model="loginFormData.password"
             type="password"
             placeholder="请输入密码"
-            :prefix-icon="Lock"
             size="large"
             show-password
-          />
+          >
+            <template #prefix>
+              <el-icon><Lock /></el-icon>
+            </template>
+          </el-input>
         </el-form-item>
-        
+
         <el-form-item>
           <el-button
             type="primary"
@@ -45,7 +51,7 @@
             登 录
           </el-button>
         </el-form-item>
-        
+
         <div class="register-link">
           还没有账号？
           <el-link type="primary" @click="showRegister = true">立即注册</el-link>
@@ -60,23 +66,23 @@
       :close-on-click-modal="false"
     >
       <el-form
-        ref="registerForm"
-        :model="registerForm"
+        ref="registerFormRef"
+        :model="registerFormData"
         :rules="registerRules"
         label-width="80px"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="registerForm.username" placeholder="请输入用户名" />
+          <el-input v-model="registerFormData.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="registerForm.email" placeholder="请输入邮箱" />
+          <el-input v-model="registerFormData.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-form-item label="姓名" prop="full_name">
-          <el-input v-model="registerForm.full_name" placeholder="请输入真实姓名" />
+          <el-input v-model="registerFormData.full_name" placeholder="请输入真实姓名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
-            v-model="registerForm.password"
+            v-model="registerFormData.password"
             type="password"
             placeholder="请输入密码"
             show-password
@@ -84,14 +90,14 @@
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPassword">
           <el-input
-            v-model="registerForm.confirmPassword"
+            v-model="registerFormData.confirmPassword"
             type="password"
             placeholder="请再次输入密码"
             show-password
           />
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-          <el-input v-model="registerForm.phone" placeholder="请输入手机号码" />
+          <el-input v-model="registerFormData.phone" placeholder="请输入手机号码" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -117,8 +123,8 @@ const userStore = useUserStore()
 const loading = ref(false)
 const registerLoading = ref(false)
 const showRegister = ref(false)
-const loginForm = ref(null)
-const registerForm = ref(null)
+const loginFormRef = ref(null)
+const registerFormRef = ref(null)
 
 const loginFormData = reactive({
   username: '',
@@ -178,10 +184,10 @@ const registerRules = {
 }
 
 const handleLogin = async () => {
-  if (!loginForm.value) return
-  
+  if (!loginFormRef.value) return
+
   try {
-    await loginForm.value.validate()
+    await loginFormRef.value.validate()
     loading.value = true
     await userStore.login(loginFormData)
     ElMessage.success('登录成功')
@@ -194,18 +200,18 @@ const handleLogin = async () => {
 }
 
 const handleRegister = async () => {
-  if (!registerForm.value) return
-  
+  if (!registerFormRef.value) return
+
   try {
-    await registerForm.value.validate()
+    await registerFormRef.value.validate()
     registerLoading.value = true
-    
+
     const { confirmPassword, ...registerData } = registerFormData
     await register(registerData)
-    
+
     ElMessage.success('注册成功，请登录')
     showRegister.value = false
-    registerForm.value?.resetFields()
+    registerFormRef.value?.resetFields()
   } catch (error) {
     console.error('注册失败:', error)
   } finally {
